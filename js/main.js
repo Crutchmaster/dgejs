@@ -34,5 +34,3 @@ res.actions.drop.doit(0);
 log(h);
 var res = e.getActions(h);
 showActions(res);
-
-//TODO make ui, can/can_be, bag

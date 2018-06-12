@@ -43,12 +43,16 @@ function doAction(actName, n) {
     turn();
 }
 
-acts = {};
-e = new Engine();
-h = new Human();
-a = new Apple();
-var thisPlace = "room";
-h.place = thisPlace;
-a.place = thisPlace;
-e.objects.push(h, a);
+function init() {
+    acts = {};
+    e = new Engine();
+    h = new Human();
+    a = new Apple();
+    var thisPlace = "room";
+    h.place = thisPlace;
+    a.place = thisPlace;
+    e.objects.push(h, a);
+}
+
+init();
 document.addEventListener("DOMContentLoaded", turn());
