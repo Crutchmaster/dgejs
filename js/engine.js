@@ -1,7 +1,6 @@
-
-function log(s) {
-    console.log(s);
-}
+var Conditions = require("./conditions.js");
+var Things = require("./things.js");
+var Action = require("./action.js");
 
 var Engine = function() {
     this.objects = [];
@@ -103,78 +102,5 @@ var Engine = function() {
         if (actor.hands.item) ret.push(actor.hands.item);
         return ret;
     }
-
 }
-
-var Human = function() {
-    this.name = "Human";
-    this.can = ["take","drop"]; //,"put","get","wear","takeoff"];
-    this.hands = {
-        name : "Руки",
-        item : false
-    };
-}
-
-var Apple = function() {
-    this.name = "Apple";
-    this.can_be = ["take","drop"];
-}
-
-var Conditions = {
-    samePlace : function(a,b) {return a.place == b.place;},
-    notSelf : function(a,b) {return a!=b;},
-    notTaken : function(a,b) {return a.hands.item != b;},
-    taken : function(a,b) {return a.hands.item == b;}
-}
-
-var Things = {
-    hands : ["item"]
-}
-
-var Action = {
-    take : {
-        actorReq : ["hands"],
-        active : function(act, obj) {act.hands.item = obj;},
-        passive : function(act, obj) {obj.place = act.hands;},
-        for : ["samePlace"],
-        condition : function(c,a,b) {return c.samePlace(a,b) && c.notSelf(a,b) && c.notTaken(a,b);}
-    },
-    drop : {
-        actorReq : ["hands"],
-        for : ["actorHands"],
-        active : function(act, obj) {obj.place = act.place; act.hands.item = false;},
-        condition : function(c,a,b) {return c.taken(a,b);} 
-    }
-}
-
-function showActions(acts) {
-    log(acts.actor.name+" can:");
-    for (var actName in acts.actions) {
-        var objs = acts.actions[actName].objs;
-        for (var i in objs) {
-            var obj = objs[i];
-            log(actName+" "+obj.name);
-        }
-    }
-}
-
-
-var e = new Engine();
-var h = new Human();
-var a = new Apple();
-var thisPlace = "room";
-h.place = thisPlace;
-a.place = thisPlace;
-e.objects.push(h, a);
-log(h);
-var res = e.getActions(h);
-log(h);
-res.actions.take.doit(0);
-var res = e.getActions(h);
-showActions(res);
-res.actions.drop.doit(0);
-log(h);
-var res = e.getActions(h);
-showActions(res);
-
-//TODO separate, make ui, can/can_be, bag
+module.exports = Engine;

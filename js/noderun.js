@@ -1,0 +1,1 @@
+eval(fs.readFileSync("main.js").toString());
