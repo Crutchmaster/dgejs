@@ -1,4 +1,7 @@
 TODO:
-* can/can_be in engine
-* bag (put,get)
 * backpack (...bag.can_be, wear, takeoff)
+* metafunction for conditions in actions
+* rename action.active, remove action.passive
+* remove actorReq. Condition dublicate
+* return result for each condition
+* log to frontend

@@ -1,5 +1,12 @@
-function log(s) {
-    console.log(s);
+logspaces = 0;
+function log(s,lvl) {
+    if (lvl == "++") logspaces += 2;
+    if (lvl == "--") logspaces -= 2;
+    if (logspaces < 0) logspaces = 0;
+    console.log(" ".repeat(logspaces)+s);
+    if (lvl == "+") logspaces += 2;
+    if (lvl == "-") logspaces -= 2;
+    if (logspaces < 0) logspaces = 0;
 }
 
 function getDiv(id) {
@@ -20,16 +27,13 @@ function button(cb, label) {
 
 function turn() {
     acts = e.getActions(h);
-    log("=== Actions:");
     log(acts);
     divClear("actions");
     for (var actName in acts.actions) {
-        log(actName+" object check");
-        for (var i in acts.actions[actName].objs) {
-                var obj = acts.actions[actName].objs[i];
+        for (var i in acts.actions[actName]) {
+                var obj = acts.actions[actName][i];
                 var cb = "doAction('"+actName+"', "+i+")";
                 var label = actName+" "+obj.name;
-                log(label);
                 divAppend("actions",button(cb, label)); 
             }
     }
@@ -39,7 +43,7 @@ function turn() {
 }
 
 function doAction(actName, n) {
-    acts.actions[actName].doit(n);
+    e.doAction(actName, acts.actor, acts.actions[actName][n]);
     turn();
 }
 
@@ -48,10 +52,13 @@ function init() {
     e = new Engine();
     h = new Human();
     a = new Apple();
+    b = new Bag();
     var thisPlace = "room";
     h.place = thisPlace;
     a.place = thisPlace;
+    b.place = thisPlace;
     e.objects.push(h, a);
+    e.objects.push(h, b);
 }
 
 init();

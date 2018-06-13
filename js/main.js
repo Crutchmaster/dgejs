@@ -20,9 +20,11 @@ function log(s) {
 var e = new Engine();
 var h = new Human();
 var a = new Apple();
+var b = new Bag();
 var thisPlace = "room";
 h.place = thisPlace;
 a.place = thisPlace;
+b.place = thisPlace;
 e.objects.push(h, a);
 log(h);
 var res = e.getActions(h);

@@ -5,50 +5,79 @@ var Action = require("./action.js");
 var Engine = function() {
     this.objects = [];
     this.getActions = function(actor) {
+        log("Begin GetActions","+");
         var ret = {actor:actor, actions : {}};
         for (var i in actor.can) {
-            var actName = actor.can[i];
-            log("Action "+actName+" check...");
+                var actName = actor.can[i];
+                var objs;
+                [objs, actName] = this.objectsForAction(actName, actor);
+
+                if (!ret.actions[actName]) ret.actions[actName] = [];
+                ret.actions[actName] = ret.actions[actName].concat(objs);
+        }
+        log("Done getActions","--");
+        return ret;
+    }
+    
+    this.doAction = function(actName, actor, obj) {
+        var act = Action[actName];
+        if (act.active) act.active(actor, obj);
+        if (act.passive) act.passive(actor, obj);                        
+    }
+
+    this.objectsForAction = function(actName, actor, provider) {
+            log("=== Action == "+actName+" == things check...","+");
+            if (typeof(provider) == "undefined") {
+                provider = actor;
+                log("Provider not exists");
+            } else {
+                log("Provider is "+provider.name);
+            }
+
+            var endVariants = [];
             var act = Action[actName];
             if (act && this.thingCheck(actor, act.actorReq)) {
-                log("Collect variants...");
+                log("Collect variants...","--");
                 var variants = [actor];
-                var endVariants = [];
                 for (var j in act["for"]) {
                     var collectName = act["for"][j];
-                    log("Collect for "+collectName);
+                    log("Collect for "+collectName,"+");
                     if (this[collectName]) {
-                        log("Get variants from engine");
-                        //TODO check can/can_be
-                        variants = variants.concat(this[collectName](actor));
+                        variants = variants.concat(this[collectName](provider));
                     } else {
                         log("Error: can't collect for "+collectName);
                     }
+                    log("Collected.","--");
                 }
+                log("Check conditions:","+");
                 for (var k in variants) {
                     var obj = variants[k];
-                    log("Check "+actName+" condition for "+obj.name);
-                    if (act.condition(Conditions, actor, obj)) { 
-                        log("Condition ok for "+actName+". Actors:"+actor.name+" and "+obj.name);
-                        if (endVariants.indexOf(obj) == -1) endVariants.push(obj);
+                    log("Check "+obj.name);
+                    var logstr = obj.name + " " + actName + ":";
+
+                    if (obj.can_be && obj.can_be.indexOf(actName) != -1) {
+                        logstr += obj.name + " can be "+actName;
+                        if (!act.condition || act.condition(Conditions, actor, obj)) { 
+                            logstr+=" condition - ok";
+                            if (endVariants.indexOf(obj) == -1) {
+                                if (act.provide) {
+                                    log("Found provider to "+act.provide+" on action");
+                                    var provObjs;
+                                    [provObjs] = this.objectsForAction(act.provide, actor, obj);
+                                    endVariants.concat(provObjs);
+                                    actName = act.provide;
+                                } else {
+                                    endVariants.push(obj);
+                                }
+                            } else { logstr+=" conditions NOT passed";}
+                            log(logstr);
+                        }
                     }
                 }
             }
-            var doitfunc = function(f,a) {return function(n) {
-                    var obj = this.objs[n];
-                    if (obj) {
-                        var ac = Action[f];
-                        if (ac.active) ac.active(a, obj);
-                        if (ac.passive) ac.passive(a, obj);                        
-                    }
-                }}(actName,actor)
- 
-            ret.actions[actName] = {
-                objs : endVariants,
-                doit : doitfunc
-            }
-        }
-        return ret;
+        log("Check "+actName+" done.","--");
+        log(endVariants);
+        return [endVariants, actName];
     }
 
     this.thingCheck = function(actor, list) {
@@ -97,6 +126,19 @@ var Engine = function() {
         }
         return ret;
     }
+    this.self = function(actor) {
+        log("Search objects in sameself");
+        var ret = [];
+        for (var i in this.objects) {
+            var obj = this.objects[i];
+            if (obj != actor && obj.place == actor) {
+                log("Found "+obj.name);
+                ret.push(obj);
+            }
+        }
+        return ret;
+    }
+
     this.actorHands = function(actor) {
         var ret = [];
         if (actor.hands.item) ret.push(actor.hands.item);
