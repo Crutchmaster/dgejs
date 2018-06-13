@@ -9,9 +9,7 @@ var Engine = function() {
         var ret = {actor:actor, actions : {}};
         for (var i in actor.can) {
                 var actName = actor.can[i];
-                var objs;
-                [objs, actName] = this.objectsForAction(actName, actor);
-
+                var objs = this.objectsForAction(actName, actor);
                 if (!ret.actions[actName]) ret.actions[actName] = [];
                 ret.actions[actName] = ret.actions[actName].concat(objs);
         }
@@ -36,48 +34,58 @@ var Engine = function() {
 
             var endVariants = [];
             var act = Action[actName];
-            if (act && this.thingCheck(actor, act.actorReq)) {
-                log("Collect variants...","--");
-                var variants = [actor];
-                for (var j in act["for"]) {
-                    var collectName = act["for"][j];
-                    log("Collect for "+collectName,"+");
-                    if (this[collectName]) {
-                        variants = variants.concat(this[collectName](provider));
-                    } else {
-                        log("Error: can't collect for "+collectName);
-                    }
-                    log("Collected.","--");
-                }
-                log("Check conditions:","+");
-                for (var k in variants) {
-                    var obj = variants[k];
-                    log("Check "+obj.name);
-                    var logstr = obj.name + " " + actName + ":";
+            var reqThings = act.actorReq ? act.actorReq : [];
+            if (act && this.thingCheck(actor, reqThings)) {
 
-                    if (obj.can_be && obj.can_be.indexOf(actName) != -1) {
-                        logstr += obj.name + " can be "+actName;
-                        if (!act.condition || act.condition(Conditions, actor, obj)) { 
-                            logstr+=" condition - ok";
-                            if (endVariants.indexOf(obj) == -1) {
-                                if (act.provide) {
-                                    log("Found provider to "+act.provide+" on action");
-                                    var provObjs;
-                                    [provObjs] = this.objectsForAction(act.provide, actor, obj);
-                                    endVariants.concat(provObjs);
-                                    actName = act.provide;
-                                } else {
-                                    endVariants.push(obj);
-                                }
-                            } else { logstr+=" conditions NOT passed";}
-                            log(logstr);
+                log("Collect variants...","--");
+                var variants = [];
+                for (var ai in act["for"]) {
+                    variants[ai] = [actor];
+                    for (var ci in act["for"][ci]) {
+                        var collectName = act["for"][ai][ci];
+                        log("Collect for "+collectName,"+");
+                        if (this[collectName]) {
+                            variants[ai] = variants[ai].concat(this[collectName](actor));
+                        } else {
+                            log("Error: can't collect for "+collectName);
+                        }
+                        log("Collected.","--");
+                    }
+                }
+
+                log("Check conditions:","+");
+                var ai = [], al = [];
+                var cnt = variants.length;
+                for (var j = 0; j < cnt; j++) {ai[j] = 0; al[j] = variants[j].length;}
+                ai[-1] = 0;
+                while (ai[-1] == 0) {
+                    var combine = [];
+                    var check = true;
+                    var varstr = "";
+                    for (var j = 0; j < cnt; j++) {
+                        var obj = variants[j][ai[j]];
+                        if (!obj.can_be || obj.can_be.indexOf(actName) == -1) {check = false; break}
+                        combine.push(obj);
+                        varstr += obj.name+";";
+                    }
+                    log("Combination: "+varstr);
+                    if (check) {
+                        log("can be "+actName);
+                        if (!act.condition || act.condition(Conditions, actor, ...combine)) { 
+                            log("Condition - ok");
+                            if (endVariants.indexOf(combine) == -1) endVariants.push(combine); //TODO do end variants
+                        } else {
+                            log("Conditions NOT passed");
                         }
                     }
+                    
+                    ai[cnt-1]++;
+                    for (var j = cnt-1; j >= 0; j--) if (ai[j] >= al[j]) {ai[j] = 0; ai[j-1]++;}
                 }
             }
         log("Check "+actName+" done.","--");
         log(endVariants);
-        return [endVariants, actName];
+        return endVariants;
     }
 
     this.thingCheck = function(actor, list) {
