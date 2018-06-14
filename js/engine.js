@@ -17,20 +17,15 @@ var Engine = function() {
         return ret;
     }
     
-    this.doAction = function(actName, actor, obj) {
+    this.doAction = function(actName, actor, objs) {
         var act = Action[actName];
-        if (act.active) act.active(actor, obj);
-        if (act.passive) act.passive(actor, obj);                        
+        console.log(objs);
+        if (act.active) act.active(actor, ...objs);
+        if (act.passive) act.passive(actor, ...objs); 
     }
 
-    this.objectsForAction = function(actName, actor, provider) {
+    this.objectsForAction = function(actName, actor) {
             log("=== Action == "+actName+" == things check...","+");
-            if (typeof(provider) == "undefined") {
-                provider = actor;
-                log("Provider not exists");
-            } else {
-                log("Provider is "+provider.name);
-            }
 
             var endVariants = [];
             var act = Action[actName];
@@ -41,11 +36,17 @@ var Engine = function() {
                 var variants = [];
                 for (var ai in act["for"]) {
                     variants[ai] = [actor];
-                    for (var ci in act["for"][ci]) {
+                    for (var ci in act["for"][ai]) {
                         var collectName = act["for"][ai][ci];
                         log("Collect for "+collectName,"+");
                         if (this[collectName]) {
-                            variants[ai] = variants[ai].concat(this[collectName](actor));
+                            var newObjs = this[collectName](actor, variants);
+                            for (var k in newObjs) {
+
+                                var newObj = newObjs[k];
+                                log("collected:"+newObj.name);
+                                if (variants[ai].indexOf(newObj) == -1) variants[ai].push(newObj);
+                            }
                         } else {
                             log("Error: can't collect for "+collectName);
                         }
@@ -65,15 +66,15 @@ var Engine = function() {
                     for (var j = 0; j < cnt; j++) {
                         var obj = variants[j][ai[j]];
                         if (!obj.can_be || obj.can_be.indexOf(actName) == -1) {check = false; break}
-                        combine.push(obj);
                         varstr += obj.name+";";
+                        combine.push(obj);
                     }
-                    log("Combination: "+varstr);
+                    if (varstr != "") log("Combination: "+varstr);
                     if (check) {
                         log("can be "+actName);
                         if (!act.condition || act.condition(Conditions, actor, ...combine)) { 
                             log("Condition - ok");
-                            if (endVariants.indexOf(combine) == -1) endVariants.push(combine); //TODO do end variants
+                            endVariants.push(combine);
                         } else {
                             log("Conditions NOT passed");
                         }
@@ -84,7 +85,6 @@ var Engine = function() {
                 }
             }
         log("Check "+actName+" done.","--");
-        log(endVariants);
         return endVariants;
     }
 
@@ -151,6 +151,19 @@ var Engine = function() {
         var ret = [];
         if (actor.hands.item) ret.push(actor.hands.item);
         return ret;
+    }
+    this.stored = function(actor, objs) {
+        var ret = [];
+        for (var i in objs) {
+            for (var j in objs[i]) {
+                var obj = objs[i][j];
+                if (obj.storage) {
+                    log("Found storage in "+obj.name);
+                    ret = ret.concat(obj.storage);
+                }
+            }
+        }
+    return ret;
     }
 }
 module.exports = Engine;

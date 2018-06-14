@@ -21,11 +21,11 @@ var Action = {
     get : {
         actorReq : ["hands"],
         for : [["samePlace","actorHands"],["stored"]],
-        condition : function(q,a,b,c) {return q.handsFree(a) && q.hasStorage(a,b);}
+        condition : function(q,a,b,c) {return q.handsFree(a) && q.hasStorage(a,b);},
         active : function(act, obj, s) {
-            act.hands.item = obj;
+            act.hands.item = s;
             s.place = act.hands;
-            obj.splice(obj.indexOf(s),1);
+            obj.storage.splice(obj.storage.indexOf(s),1);
         }
     }
 }

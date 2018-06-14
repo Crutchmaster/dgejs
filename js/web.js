@@ -31,10 +31,11 @@ function turn() {
     divClear("actions");
     for (var actName in acts.actions) {
         for (var i in acts.actions[actName]) {
-                var obj = acts.actions[actName][i];
-                var cb = "doAction('"+actName+"', "+i+")";
-                var label = actName+" "+obj.name;
-                divAppend("actions",button(cb, label)); 
+                var name = "";
+                for (var j in acts.actions[actName][i]) name += acts.actions[actName][i][j].name + " ";
+                    var cb = "doAction('"+actName+"', "+i+")";
+                    var label = actName+" "+name;
+                    divAppend("actions",button(cb, label));
             }
     }
     divClear("data");
