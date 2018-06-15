@@ -20,17 +20,15 @@ var Engine = function() {
     this.doAction = function(actName, actor, objs) {
         var act = Action[actName];
         console.log(objs);
-        if (act.active) act.active(actor, ...objs);
-        if (act.passive) act.passive(actor, ...objs); 
+        if (act.do) act.do(actor, ...objs);
     }
 
     this.objectsForAction = function(actName, actor) {
-            log("=== Action == "+actName+" == things check...","+");
+            log("=== Action == "+actName,"+");
 
             var endVariants = [];
             var act = Action[actName];
-            var reqThings = act.actorReq ? act.actorReq : [];
-            if (act && this.thingCheck(actor, reqThings)) {
+            if (act) {
 
                 log("Collect variants...","--");
                 var variants = [];
