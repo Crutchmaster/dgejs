@@ -1,3 +1,4 @@
+//Условия для действий. Аргументы произвользные, вызывается из actions.
 var Conditions = {
     samePlace : function(a,b) {return a.place == b.place;},
     notSelf : function(a,b) {return a!=b;},

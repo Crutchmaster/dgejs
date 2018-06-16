@@ -1,7 +1,10 @@
 var Action = {
     take : {
+        //Функция для действия
         do : function(act, obj) {act.hands.item = obj; obj.place = act.hands;},
-        for : [["samePlace","self"]],
+        //Откуда делать сбор объектов
+        for : [["samePlace"]],
+        //Условие для выполнения действия. c - ссылка на Condions, a - actor, b и последующие - объекты из for
         condition : function(c,a,b) {return c.notSelf(a,b) && c.handsFree(a);}
     },
     drop : {
@@ -16,7 +19,9 @@ var Action = {
     },
     get : {
         for : [["samePlace","actorHands"],["stored"]],
+        //Если в массиве for больше одного массива, объекты оттуда берутся из следующего агрумента (здесь - c)
         condition : function(q,a,b,c) {return q.handsFree(a) && q.hasStorage(a,b);},
+        //Аналогично для do. При действиях с нескольними объектами они просто дописываются в конец.
         do : function(act, obj, s) {
             act.hands.item = s;
             s.place = act.hands;
