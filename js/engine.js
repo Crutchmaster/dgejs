@@ -31,93 +31,76 @@ var Engine = function() {
             if (act) {
 
                 log("Collect variants...","--");
-                var variants = [];
-                for (var ai in act["for"]) {
-                    variants[ai] = [actor];
-                    for (var ci in act["for"][ai]) {
-                        var collectName = act["for"][ai][ci];
-                        log("Collect for "+collectName,"+");
-                        if (this[collectName]) {
-                            var newObjs = this[collectName](actor, variants);
-                            for (var k in newObjs) {
-
-                                var newObj = newObjs[k];
-                                log("collected:"+newObj.name);
-                                if (variants[ai].indexOf(newObj) == -1) variants[ai].push(newObj);
-                            }
-                        } else {
-                            log("Error: can't collect for "+collectName);
-                        }
-                        log("Collected.","--");
-                    }
-                }
+                var variants = this.collectVariants(act, actor);
 
                 log("Check conditions:","+");
-                var ai = [], al = [];
-                var cnt = variants.length;
-                for (var j = 0; j < cnt; j++) {ai[j] = 0; al[j] = variants[j].length;}
-                ai[-1] = 0;
-                while (ai[-1] == 0) {
-                    var combine = [];
-                    var check = true;
-                    var varstr = "";
-                    for (var j = 0; j < cnt; j++) {
-                        var obj = variants[j][ai[j]];
-                        if (!obj.can_be || obj.can_be.indexOf(actName) == -1) {check = false; break}
-                        varstr += obj.name+";";
-                        combine.push(obj);
-                    }
-                    if (varstr != "") log("Combination: "+varstr);
-                    if (check) {
-                        log("can be "+actName);
-                        if (!act.condition || act.condition(Conditions, actor, ...combine)) { 
-                            log("Condition - ok");
-                            endVariants.push(combine);
-                        } else {
-                            log("Conditions NOT passed");
-                        }
-                    }
-                    
-                    ai[cnt-1]++;
-                    for (var j = cnt-1; j >= 0; j--) if (ai[j] >= al[j]) {ai[j] = 0; ai[j-1]++;}
-                }
+                endVariants = this.combine(act, variants, actor, actName);
             }
         log("Check "+actName+" done.","--");
         return endVariants;
     }
 
-    this.thingCheck = function(actor, list) {
-        for (var i in list) {
-            var thingName = list[i];
-            log("Check "+thingName+" for "+actor.name);
-            var thing = Things[thingName];
-            var actorThing = actor[thingName];
-            var actorHasThing = actor.hasOwnProperty(thingName);
-            if (!thing) {
-                log("Error:"+thingName+" not registred.");
-                return false;
+    this.combine = function(act, variants, actor, actName) {
+        var endVariants = [];
+        var ai = [], al = [];
+        var cnt = variants.length;
+        for (var j = 0; j < cnt; j++) {
+            ai[j] = 0;
+            al[j] = variants[j].length;
+        }
+        ai[-1] = 0;
+        while (ai[-1] == 0) {
+            var combine = [];
+            var check = true;
+            var varstr = "";
+            for (var j = 0; j < cnt; j++) {
+                var obj = variants[j][ai[j]];
+                if (!obj.can_be || obj.can_be.indexOf(actName) == -1) {
+                    check = false;
+                    break
+                }
+                varstr += obj.name+";";
+                combine.push(obj);
             }
-            if (!actorHasThing) {
-                log("actor:");
-                log(actor);
-                log(actor.name+" don't have "+thingName);
-                return false;
-            }
-            for (var j in thing) {
-                var thingParName = thing[j];
-                log("Check "+thingName+" part: "+thingParName);
-                var ok = true;
-                var thingPar = Things[thingParName];
-                if (thingPar) ok = this.thingCheck(actorThing, thingPar);
-                if (!ok) return false;
-                if (!actorThing.hasOwnProperty(thingParName)) {
-                    log(actor.name+"'s "+thingName+" don't have "+thingParName+".");
-                    return false;
+            if (varstr != "") log("Combination: "+varstr);
+            if (check) {
+                log("can be "+actName);
+                if (!act.condition || act.condition(Conditions, actor, ...combine)) { 
+                    log("Condition - ok");
+                    endVariants.push(combine);
+                } else {
+                    log("Conditions NOT passed");
                 }
             }
+            ai[cnt-1]++;
+            for (var j = cnt-1; j >= 0; j--)
+                if (ai[j] >= al[j]) {ai[j] = 0; ai[j-1]++;}
         }
-        log("Ok");
-        return true;
+    return endVariants;
+    }
+
+    this.collectVariants = function(act, actor) {
+        var variants = [];
+        for (var ai in act["for"]) {
+            variants[ai] = [actor];
+            for (var ci in act["for"][ai]) {
+                var collectName = act["for"][ai][ci];
+                log("Collect for "+collectName,"+");
+                if (this[collectName]) {
+                    var newObjs = this[collectName](actor, variants);
+                    for (var k in newObjs) {
+
+                        var newObj = newObjs[k];
+                        log("collected:"+newObj.name);
+                        if (variants[ai].indexOf(newObj) == -1) variants[ai].push(newObj);
+                    }
+                } else {
+                    log("Error: can't collect for "+collectName);
+                }
+                log("Collected.","--");
+            }
+        }
+    return variants;
     }
 
     this.samePlace = function(actor) {
