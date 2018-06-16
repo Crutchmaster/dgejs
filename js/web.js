@@ -31,11 +31,9 @@ function turn() {
     divClear("actions");
     for (var actName in acts.actions) {
         for (var i in acts.actions[actName]) {
-                var name = "";
-                for (var j in acts.actions[actName][i]) name += acts.actions[actName][i][j].name + " ";
-                    var cb = "doAction('"+actName+"', "+i+")";
-                    var label = actName+" "+name;
-                    divAppend("actions",button(cb, label));
+                var label = Action[actName].name(acts.actor, ...acts.actions[actName][i]);
+                var cb = "doAction('"+actName+"', "+i+")";
+                divAppend("actions",button(cb, label));
             }
     }
     divClear("data");

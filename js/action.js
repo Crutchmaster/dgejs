@@ -5,17 +5,21 @@ var Action = {
         //Откуда делать сбор объектов
         for : [["samePlace"]],
         //Условие для выполнения действия. c - ссылка на Condions, a - actor, b и последующие - объекты из for
-        condition : function(c,a,b) {return c.notSelf(a,b) && c.handsFree(a);}
+        condition : function(c,a,b) {return c.notSelf(a,b) && c.handsFree(a);},
+        //Функция возвращает название по аргументам. В перспективе можно добавить лицо, число, слконение в объект/интернационализацию.
+        name : function(a,b) {return "Взять "+b.str.acc;}
     },
     drop : {
         for : [["actorHands"]],
         do : function(act, obj) {obj.place = act.place; act.hands.item = false;},
-        condition : function(c,a,b) {return c.itemInHands(a,b) && c.taken(a,b);}
+        condition : function(c,a,b) {return c.itemInHands(a,b) && c.taken(a,b);},
+        name : function(a,b) {return "Бросить "+b.str.acc;}
     },
     put : {
         for : [["samePlace"]],
         condition : function(c,a,b) {return c.notSelf(a,b) && c.itemInHands(a,b) && c.hasStorage(a,b);},
-        do : function(act, obj) {obj.storage.push(act.hands.item); act.hands.item.place = obj; act.hands.item = false;}
+        do : function(act, obj) {obj.storage.push(act.hands.item); act.hands.item.place = obj; act.hands.item = false;},
+        name : function(a,b) {return "Положить "+a.hands.item.str.nom+" в "+b.str.nom;}
     },
     get : {
         for : [["samePlace","actorHands"],["stored"]],
@@ -26,7 +30,8 @@ var Action = {
             act.hands.item = s;
             s.place = act.hands;
             obj.storage.splice(obj.storage.indexOf(s),1);
-        }
+        },
+        name : function(a,b,c) {return "Достать "+c.str.nom+" из "+b.str.gen;}
     }
 }
 module.exports = Action;
