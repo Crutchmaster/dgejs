@@ -55,6 +55,7 @@ function init() {
     e = new Engine();
     h = new Human();
     h2 = new Human();
+    h.name = "Bill";
     h2.name = "Bob";
     a = new Apple();
     b = new Bag();
