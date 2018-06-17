@@ -1,8 +1,5 @@
 TODO:
-* backpack (...bag.can_be, wear, takeoff)
-* metafunction for conditions in actions
-* return result for each condition
 * log to frontend
-* string builder function for each action
-* someting for ui
 * for (var i in arr) => for (var i = 0, n = arr.length; i < n; i++)
+* Structure checker.
+* Autotester.

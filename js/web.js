@@ -54,13 +54,16 @@ function init() {
     acts = {};
     e = new Engine();
     h = new Human();
+    h2 = new Human();
+    h2.name = "Bob";
     a = new Apple();
     b = new Bag();
     var thisPlace = "room";
     h.place = thisPlace;
+    h2.place = thisPlace;
     a.place = thisPlace;
     b.place = thisPlace;
-    e.objects.push(h, a, b);
+    e.objects.push(h, h2, a, b);
 }
 
 init();

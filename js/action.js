@@ -47,6 +47,15 @@ var Action = {
             a.wear.splice(a.wear.indexOf(b), 1);
         },
         name : function(a,b) {return "Снять "+b.str.acc;}
+    },
+    talk : {
+        for : [["samePlace"],["talkTopic"]],
+        condition : function(q,a,b,c) {return a != b && a != c;},
+        do : function(a,b,c) {
+            console.log(a.name+" talk with "+b.name+" about "+c.name);
+        },
+        name : function(a,b,c) {
+            return "Говорить с "+b.name+" о "+c.name;}
     }
 }
 module.exports = Action;

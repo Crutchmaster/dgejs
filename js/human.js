@@ -2,8 +2,10 @@ var Human = function() {
     //Имя - обязательно
     this.name = "Human";
     //Что может делать
-    this.can = ["take","drop","put","get","wear","takeoff"];
+    this.can = ["take","drop","put","get","wear","takeoff","talk"];
+    this.can_be = ["talk"];
     //Остальные нужные структуры с данными.
+    this.talkTopic = [TalkTopic.weather];
     this.hands = {
         name : "Hands",
         item : false
@@ -35,5 +37,12 @@ var Human = function() {
             }
         };
     }
+}
+
+var TalkTopic = {
+    weather : {
+        name : "weather",
+        can_be : ["talk"],
+        }
 }
 module.exports = Human;
