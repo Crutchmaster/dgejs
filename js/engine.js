@@ -118,18 +118,19 @@ var Engine = function() {
                 //Сбор объектов
                 var collectName = act["for"][ai][ci];
                 log("Collect for "+collectName,"+");
-                if (this[collectName]) {
-                    //Сборщик - сам движок - в перспективе поменять/добавить. Функция должна возвращать массив.
-                    var newObjs = this[collectName](actor, variants);
-                    for (var k in newObjs) {
-                        //сохранение уникальных объектов для каждого аргумента
-                        var newObj = newObjs[k];
-                        log("collected:"+newObj.name);
-                        if (variants[ai].indexOf(newObj) == -1) variants[ai].push(newObj);
-                    }
-                } else {
-                    log("Error: can't collect for "+collectName);
+                var newObjs = [];
+                //Сборщик - сам движок - в перспективе поменять/добавить. Функция должна возвращать массив.
+                if (this[collectName]) newObjs = this[collectName](actor, variants);
+                else if (Collectors[collectName]) newObjs = Collectors[collectName](actor, variants);
+                else log("Error: can't collect for "+collectName);
+
+                for (var k in newObjs) {
+                    //сохранение уникальных объектов для каждого аргумента
+                    var newObj = newObjs[k];
+                    log("collected:"+newObj.name);
+                    if (variants[ai].indexOf(newObj) == -1) variants[ai].push(newObj);
                 }
+
                 log("Collected.","--");
             }
         }

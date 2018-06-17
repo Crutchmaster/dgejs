@@ -32,6 +32,21 @@ var Action = {
             obj.storage.splice(obj.storage.indexOf(s),1);
         },
         name : function(a,b,c) {return "Достать "+c.str.nom+" из "+b.str.gen;}
+    },
+    wear : {
+        for : [["actorHands"]],
+        condition : function(c,a,b) {return a.wear;},
+        do : function(a, b) {a.wear.push(b); a.hands.item = false; b.place = a;},
+        name : function(a,b) {return "Надеть "+b.str.nom;}
+    },
+    takeoff : {
+        for : [["actorWeared"]],
+        condition : function(c,a,b) {return c.handsFree(a,b);},
+        do : function(a, b) {
+            Action.take.do(a,b);
+            a.wear.splice(a.wear.indexOf(b), 1);
+        },
+        name : function(a,b) {return "Снять "+b.str.acc;}
     }
 }
 module.exports = Action;

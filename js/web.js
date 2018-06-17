@@ -37,8 +37,12 @@ function turn() {
             }
     }
     divClear("data");
-    divAppend("data", h.name+"<br/>");
-    divAppend("data", h.hands.name + ": " + (h.hands.item ? h.hands.item.name : "none"));
+    var humanData = h.getData();
+    for (var dname in humanData) {
+        var data = humanData[dname];
+        divAppend("data", data.label + data.text + "</br>");
+    }
+
 }
 
 function doAction(actName, n) {
@@ -56,8 +60,7 @@ function init() {
     h.place = thisPlace;
     a.place = thisPlace;
     b.place = thisPlace;
-    e.objects.push(h, a);
-    e.objects.push(h, b);
+    e.objects.push(h, a, b);
 }
 
 init();
