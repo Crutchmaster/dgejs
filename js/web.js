@@ -9,6 +9,10 @@ function log(s,lvl) {
     if (logspaces < 0) logspaces = 0;
 }
 
+function say(str) {
+    divPush("log",str+"<br/>");
+}
+
 function getDiv(id) {
     return document.getElementById(id);
 }
@@ -19,6 +23,12 @@ function divClear(id) {
 
 function divAppend(id, str) {
     getDiv(id).innerHTML += str;
+}
+
+function divPush(id, str) {
+    var div = getDiv(id);
+    var divStr = div.innerHTML;
+    div.innerHTML = str + divStr;
 }
 
 function button(cb, label) {
@@ -53,16 +63,15 @@ function doAction(actName, n) {
 function init() {
     acts = {};
     e = new Engine();
-    h = new Human();
-    h2 = new Human();
-    h.name = "Bill";
-    h2.name = "Bob";
+    h = new Human("Вася");
+    h2 = new Human("Федя");
     a = new Apple();
     b = new Bag();
     var thisPlace = "room";
     h.place = thisPlace;
     h2.place = thisPlace;
-    a.place = thisPlace;
+    a.place = h2.hands;
+    h2.hands.item = a;
     b.place = thisPlace;
     e.objects.push(h, h2, a, b);
 }

@@ -50,12 +50,10 @@ var Action = {
     },
     talk : {
         for : [["samePlace"],["talkTopic"]],
-        condition : function(q,a,b,c) {return a != b && a != c;},
-        do : function(a,b,c) {
-            console.log(a.name+" talk with "+b.name+" about "+c.name);
-        },
-        name : function(a,b,c) {
-            return "Говорить с "+b.name+" о "+c.name;}
+        condition : function(q,a,b,c) {return a != b && a != c && c.condition(a,b);},
+        do : function(a,b,c) {return c.getTalk(a,b,c);},
+        name : function(a,b,c) {console.log(a,b,c);
+            return c.getName(a,b,c);}
     }
 }
 module.exports = Action;
