@@ -59,7 +59,7 @@ var TalkTopic = {
     }),
     askItem : new TT({
         name : "попросить",
-        label : function(a,b,c) {return "Попросить у "+b.str.acl+" "+b.hands.item.str.nom},
+        label : function(a,b,c) {return "Попросить у "+b.str.gen+" "+b.hands.item.str.nom},
         talk : function(a,b,c) {say(a.str.nom+" просит у "+b.str.gen+" "+b.hands.item.str.nom);},
         condition : function(a,b) {return b.hands.item;}
     })
