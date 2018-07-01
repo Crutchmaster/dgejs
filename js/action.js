@@ -11,7 +11,7 @@ var Action = {
     },
     drop : {
         for : [["actorHands"]],
-        do : function(act, obj) {obj.place = act.place; act.hands.item = false;},
+        do : function(act, obj) {obj.place = act.place; act.hands.item = false; say(act.str.nom+" бросил "+obj.str.nom);},
         condition : function(c,a,b) {return c.itemInHands(a,b) && c.taken(a,b);},
         name : function(a,b) {return "Бросить "+b.str.acc;}
     },

@@ -1,5 +1,6 @@
 logspaces = 0;
-function log(s,lvl) {
+function log(s,lvl,on = true) {
+    if (!on) return;
     if (lvl == "++") logspaces += 2;
     if (lvl == "--") logspaces -= 2;
     if (logspaces < 0) logspaces = 0;
@@ -17,7 +18,6 @@ function getDiv(id) {
     return document.getElementById(id);
 }
 function divClear(id) {
-    log(getDiv(id));
     getDiv(id).innerHTML = "";
 }
 
@@ -37,7 +37,6 @@ function button(cb, label) {
 
 function turn() {
     acts = e.getActions(h);
-    log(acts);
     divClear("actions");
     for (var actName in acts.actions) {
         for (var i in acts.actions[actName]) {
@@ -57,6 +56,7 @@ function turn() {
 
 function doAction(actName, n) {
     e.doAction(actName, acts.actor, acts.actions[actName][n]);
+    e.turnAI();
     turn();
 }
 
@@ -65,6 +65,7 @@ function init() {
     e = new Engine();
     h = new Human("Вася");
     h2 = new Human("Федя");
+    h2.ai = TraderAI;
     a = new Apple();
     b = new Bag();
     var thisPlace = "room";

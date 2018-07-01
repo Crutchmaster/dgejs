@@ -3,7 +3,7 @@ var Collectors = {
     talkTopic : function(actor, objs) {
         return Helper.for2(objs, function(obj) {
             if (obj.talkTopic) {
-                log("Collect "+obj.talkTopic.length+" topics");
+                //log("Collect "+obj.talkTopic.length+" topics");
                 return obj.talkTopic;
             }
             return false;

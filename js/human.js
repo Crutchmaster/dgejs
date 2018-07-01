@@ -2,7 +2,6 @@ var Human = function(name) {
     //Имя - обязательно
     this.name = name;
     this.str = (Strings[name] ? Strings[name] : Strings["Вася"]);
-    this.ai = [""]; //?
     //Что может делать
     this.can = ["take","drop","put","get","wear","takeoff","talk"];
     this.can_be = ["talk"];
